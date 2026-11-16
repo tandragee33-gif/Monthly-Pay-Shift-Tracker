@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monthly Pay & Winter Service Tracker</title>
+  <!-- Tailwind CSS via CDN (No build step required for GitHub Pages) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Custom subtle scrollbar for table overflow on small screens */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Toast Notification Container (Replaces alert() and confirm()) -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Confirmation Modal (Replaces window.confirm()) -->
+  <div id="confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200">
+      <h3 id="confirm-title" class="text-lg font-semibold text-slate-900">Confirm Action</h3>
+      <p id="confirm-message" class="text-sm text-slate-600 mt-2">Are you sure you want to proceed?</p>
+      <div class="mt-6 flex justify-end gap-3">
+        <button id="confirm-cancel-btn" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
+          Cancel
+        </button>
+        <button id="confirm-ok-btn" class="px-4 py-2 rounded-xl text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 transition">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <!-- Brand / Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm shrink-0">
+          <!-- Pound Sterling Icon SVG -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.121 7.629A3 3 0 0 0 9.017 9.43c-.023.212-.002.425.028.636l.506 3.541a4.5 4.5 0 0 1-.43 2.65L9 16.5l1.539-.513a2.25 2.25 0 0 1 1.422 0l.655.218a2.25 2.25 0 0 0 1.718-.122L15 15.75M8.25 12H12m9 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold text-slate-900 leading-tight">Monthly Pay & Winter Service Tracker</h1>
+          <p class="text-xs text-slate-500">Full-Time Wage + Part-Time Shifts, Standby & Call-Outs</p>
+        </div>
+      </div>
+
+      <!-- Month / Date Selector & Data Actions -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <!-- Month Picker Control -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button id="prev-month-btn" title="Previous Month" class="p-2 rounded-lg text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-xs transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <input type="month" id="month-selector" class="bg-transparent text-sm font-semibold text-slate-800 px-2 py-1 focus:outline-none cursor-pointer" />
+          <button id="next-month-btn" title="Next Month" class="p-2 rounded-lg text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-xs transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
+
+        <button id="today-btn" class="px-3 py-2 text-xs font-medium bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition">
+          Current Month
+        </button>
+
+        <!-- Toggle Rates & Settings Button -->
+        <button id="toggle-settings-btn" class="px-3.5 py-2 text-xs sm:text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl hover:bg-indigo-100 transition flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+          </svg>
+          <span>Wages & Rates</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
+
+    <!-- Collapsible Wage & 25/26 Rate Settings Drawer -->
+    <section id="settings-panel" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+      <div class="px-6 py-4 bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <h2 class="text-base font-semibold">Full-Time Wage & Part-Time 25/26 Rates</h2>
+          <p class="text-xs text-slate-300">Saved automatically in your browser. Update your full-time wage anytime you get a pay rise.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="reset-2526-rates-btn" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition">
+            Reset 25/26 Rates
+          </button>
+          <button id="close-settings-btn" class="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition">
+            Done
+          </button>
+        </div>
+      </div>
+
+      <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Column 1: Full-Time Monthly Wage & Tax Settings -->
+        <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600">1. Full-Time Wage & Tax</h3>
+
+          <div>
+            <label for="setting-ft-wage" class="block text-xs font-medium text-slate-700 mb-1">
+              Normal Monthly Full-Time Wage (£)
+            </label>
+            <input type="number" step="0.01" min="0" id="setting-ft-wage" placeholder="e.g. 2400.00"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-semibold" />
+            <p class="text-[11px] text-slate-500 mt-1">Enter your standard monthly amount (either take-home after tax, or gross).</p>
+          </div>
+
+          <div class="flex flex-col gap-1.5 pt-1">
+            <span class="text-xs font-medium text-slate-700">Apply Full-Time Wage Change To:</span>
+            <select id="setting-ft-scope" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="from-selected">Selected Month & Future Months (Pay Rise)</option>
+              <option value="all-months">All Months (Past & Future)</option>
+              <option value="only-selected">Only Selected Month</option>
+            </select>
+          </div>
+
+          <div class="pt-2 border-t border-slate-200">
+            <label for="setting-pt-tax" class="block text-xs font-medium text-slate-700 mb-1">
+              Est. Tax / NI Deduction on Part-Time (%)
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="number" step="1" min="0" max="100" id="setting-pt-tax"
+                class="w-24 px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <span class="text-xs text-slate-500">e.g. 20% basic rate (0% for gross)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Winter Service Hourly Rates (25/26) -->
+        <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-700">2. Hourly Shift Rates</h3>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">25/26</span>
+          </div>
+
+          <div>
+            <label for="rate-hourly-weekday" class="block text-xs font-medium text-slate-700 mb-1">Weekday Hourly Rate (£/hr)</label>
+            <input type="number" step="0.01" min="0" id="rate-hourly-weekday"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+
+          <div>
+            <label for="rate-hourly-saturday" class="block text-xs font-medium text-slate-700 mb-1">Saturday Hourly Rate (£/hr)</label>
+            <input type="number" step="0.01" min="0" id="rate-hourly-saturday"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+
+          <div>
+            <label for="rate-hourly-sunday" class="block text-xs font-medium text-slate-700 mb-1">Sunday & Bank Holiday (£/hr)</label>
+            <input type="number" step="0.01" min="0" id="rate-hourly-sunday"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+        </div>
+
+        <!-- Column 3: Winter Service On-Call / Standby Availability Rates (25/26) -->
+        <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-amber-700">3. Standby / On-Call Rates</h3>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">25/26</span>
+          </div>
+
+          <div>
+            <label for="rate-standby-weekday" class="block text-xs font-medium text-slate-700 mb-1">Weekday Standby (£)</label>
+            <input type="number" step="0.01" min="0" id="rate-standby-weekday"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" />
+          </div>
+
+          <div>
+            <label for="rate-standby-weekend" class="block text-xs font-medium text-slate-700 mb-1">Weekend Standby (Sat/Sun) (£)</label>
+            <input type="number" step="0.01" min="0" id="rate-standby-weekend"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" />
+          </div>
+
+          <div>
+            <label for="rate-standby-bank" class="block text-xs font-medium text-slate-700 mb-1">Bank / Public & Privilege Holiday (£)</label>
+            <input type="number" step="0.01" min="0" id="rate-standby-bank"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none" />
+          </div>
+        </div>
+
+        <!-- Column 4: Call-Out Configuration -->
+        <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-purple-700">4. Call-Out Settings</h3>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">Flexible</span>
+          </div>
+
+          <div>
+            <label for="rate-callout-mode" class="block text-xs font-medium text-slate-700 mb-1">Call-Out Calculation Method</label>
+            <select id="rate-callout-mode" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+              <option value="hourly_plus_fee">Hourly Rate (by Day) + Flat Call-Out Fee</option>
+              <option value="hourly_min_hours">Hourly Rate (with Minimum Paid Hours)</option>
+              <option value="flat_only">Flat Call-Out Fee Only</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="rate-callout-fee" class="block text-xs font-medium text-slate-700 mb-1">Flat Call-Out Fee (£)</label>
+            <input type="number" step="0.01" min="0" id="rate-callout-fee"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" />
+          </div>
+
+          <div>
+            <label for="rate-callout-min-hours" class="block text-xs font-medium text-slate-700 mb-1">Min. Paid Hours per Call-Out</label>
+            <input type="number" step="0.25" min="0" id="rate-callout-min-hours"
+              class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Monthly Summary Dashboard Cards -->
+    <section aria-label="Monthly Pay Summary">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+        <h2 class="text-sm font-semibold text-slate-600 uppercase tracking-wider">
+          Pay Summary for <span id="display-month-label" class="text-indigo-600 font-bold">November 2026</span>
+        </h2>
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+          <span>Quick Full-Time Wage:</span>
+          <div class="relative inline-flex items-center">
+            <span class="absolute left-2.5 text-slate-400 font-medium">£</span>
+            <input type="number" step="0.01" min="0" id="quick-ft-wage"
+              class="w-32 pl-6 pr-2 py-1 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <button id="open-wage-rise-btn" class="text-indigo-600 hover:underline font-medium">Edit / Pay Rise</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- Card 1: Full-Time Base Wage -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Full-Time Base Wage</span>
+            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+          </div>
+          <div class="mt-2">
+            <div id="summary-ft-wage" class="text-2xl font-bold text-slate-900">£0.00</div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Fixed monthly salary</p>
+          </div>
+        </div>
+
+        <!-- Card 2: Part-Time Shift Hours Pay -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Part-Time Shifts</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-50 text-emerald-700" id="summary-shift-hours">0.00 hrs</span>
+          </div>
+          <div class="mt-2">
+            <div id="summary-shift-pay" class="text-2xl font-bold text-emerald-700">£0.00</div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Weekday / Sat / Sun rates</p>
+          </div>
+        </div>
+
+        <!-- Card 3: Standby / On-Call Allowance -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Standby / On-Call</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-50 text-amber-700" id="summary-standby-count">0 days</span>
+          </div>
+          <div class="mt-2">
+            <div id="summary-standby-pay" class="text-2xl font-bold text-amber-700">£0.00</div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Availability allowances</p>
+          </div>
+        </div>
+
+        <!-- Card 4: Call-Out Pay -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500">Call-Outs</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-purple-50 text-purple-700" id="summary-callout-count">0 calls</span>
+          </div>
+          <div class="mt-2">
+            <div id="summary-callout-pay" class="text-2xl font-bold text-purple-700">£0.00</div>
+            <p class="text-[11px] text-slate-400 mt-0.5" id="summary-callout-hours">0.00 hrs logged</p>
+          </div>
+        </div>
+
+        <!-- Card 5: Combined Monthly Total -->
+        <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-indigo-100">Combined Total</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-indigo-500 text-white" id="summary-pt-subtotal-badge">PT: £0.00</span>
+          </div>
+          <div class="mt-2">
+            <div id="summary-grand-total" class="text-2xl font-bold tracking-tight">£0.00</div>
+            <p id="summary-after-tax-note" class="text-[11px] text-indigo-200 mt-0.5">Est. after PT tax: £0.00</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add / Edit Entry Form Card -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <div>
+          <h3 id="form-heading" class="text-base font-semibold text-slate-900">Log Part-Time Shift, Standby or Call-Out</h3>
+          <p class="text-xs text-slate-500">Automatically detects Weekday, Saturday, or Sunday rates and handles overnight shifts past midnight.</p>
+        </div>
+        <div id="live-preview-pill" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">
+          <span>Preview:</span>
+          <span id="preview-day-badge" class="font-semibold text-indigo-600">Weekday</span>
+          <span>•</span>
+          <span id="preview-hours">0.00 hrs</span>
+          <span>•</span>
+          <span id="preview-pay" class="font-bold text-emerald-700">£0.00</span>
+        </div>
+      </div>
+
+      <form id="entry-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
+        <input type="hidden" id="editing-entry-id" value="" />
+
+        <!-- Date -->
+        <div class="lg:col-span-2">
+          <label for="entry-date" class="block text-xs font-medium text-slate-700 mb-1">Date</label>
+          <input type="date" id="entry-date" required
+            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+        </div>
+
+        <!-- Entry Type -->
+        <div class="lg:col-span-2">
+          <label for="entry-type" class="block text-xs font-medium text-slate-700 mb-1">Type</label>
+          <select id="entry-type"
+            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none font-medium">
+            <option value="shift">Work Shift (Hourly)</option>
+            <option value="standby">Standby / On-Call</option>
+            <option value="callout">Call-Out</option>
+          </select>
+        </div>
+
+        <!-- Start Time -->
+        <div class="lg:col-span-2" id="start-time-wrapper">
+          <label for="entry-start" class="block text-xs font-medium text-slate-700 mb-1">Start Time</label>
+          <input type="time" id="entry-start" value="18:00"
+            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+        </div>
+
+        <!-- End Time -->
+        <div class="lg:col-span-2" id="end-time-wrapper">
+          <label for="entry-end" class="block text-xs font-medium text-slate-700 mb-1">End Time</label>
+          <input type="time" id="entry-end" value="22:00"
+            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+        </div>
+
+        <!-- Bank / Public Holiday Override & Notes -->
+        <div class="lg:col-span-2">
+          <label for="entry-notes" class="block text-xs font-medium text-slate-700 mb-1">Notes (Optional)</label>
+          <input type="text" id="entry-notes" placeholder="e.g. Gritting route 4"
+            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+        </div>
+
+        <!-- Submit / Cancel Buttons -->
+        <div class="lg:col-span-2 flex items-center gap-2">
+          <button type="submit" id="submit-entry-btn"
+            class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span id="submit-btn-text">Add Entry</span>
+          </button>
+          <button type="button" id="cancel-edit-btn" class="hidden py-2 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-xl transition">
+            Cancel
+          </button>
+        </div>
+
+        <!-- Row 2 inside form: Bank Holiday Toggle & Quick Presets -->
+        <div class="sm:col-span-2 lg:col-span-12 pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100">
+          <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="entry-bank-holiday" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
+            <span class="text-xs font-medium text-slate-700">Bank / Public / Privilege Holiday Rate</span>
+            <span class="text-[11px] text-slate-400">(Applies £26.75/hr shift or £46.36 standby)</span>
+          </label>
+
+          <!-- Quick Add Standby Week Helper -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[11px] text-slate-400">Quick Shift Times:</span>
+            <button type="button" data-start="18:00" data-end="22:00" class="preset-time-btn px-2 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">18:00–22:00</button>
+            <button type="button" data-start="03:00" data-end="07:00" class="preset-time-btn px-2 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">03:00–07:00</button>
+            <button type="button" data-start="22:00" data-end="06:00" class="preset-time-btn px-2 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">22:00–06:00 (Overnight)</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Simple Monthly Breakdown Table -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-semibold text-slate-900">Monthly Payment Breakdown Table</h3>
+          <p class="text-xs text-slate-500">All logged shifts, standby allowances, and call-outs for the selected month.</p>
+        </div>
+
+        <!-- Filter & Export Controls -->
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="filter-type" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none">
+            <option value="all">All Types</option>
+            <option value="shift">Work Shifts Only</option>
+            <option value="standby">Standby Only</option>
+            <option value="callout">Call-Outs Only</option>
+          </select>
+
+          <button id="export-csv-btn" class="px-3 py-1.5 text-xs font-medium bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl transition flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive Table Wrapper -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              <th class="py-3 px-4">Date & Day</th>
+              <th class="py-3 px-4">Category</th>
+              <th class="py-3 px-4">Start</th>
+              <th class="py-3 px-4">End</th>
+              <th class="py-3 px-4 text-right">Hours</th>
+              <th class="py-3 px-4 text-right">Rate Applied</th>
+              <th class="py-3 px-4">Notes</th>
+              <th class="py-3 px-4 text-right">Amount (£)</th>
+              <th class="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="entries-table-body" class="divide-y divide-slate-100 text-sm">
+            <!-- Rows rendered dynamically via JavaScript -->
+          </tbody>
+          <tfoot class="bg-slate-50 border-t-2 border-slate-200 text-sm font-semibold text-slate-800">
+            <tr>
+              <td colspan="4" class="py-3 px-4 text-slate-600">Part-Time Subtotal (Selected Month)</td>
+              <td id="table-total-hours" class="py-3 px-4 text-right font-mono text-xs">0.00 hrs</td>
+              <td class="py-3 px-4"></td>
+              <td class="py-3 px-4"></td>
+              <td id="table-pt-total" class="py-3 px-4 text-right text-emerald-700 font-bold">£0.00</td>
+              <td class="py-3 px-4"></td>
+            </tr>
+            <tr class="bg-indigo-50/60 border-t border-indigo-100">
+              <td colspan="4" class="py-3 px-4 text-indigo-900">Full-Time Base Monthly Wage</td>
+              <td class="py-3 px-4 text-right text-xs text-indigo-400">Fixed</td>
+              <td class="py-3 px-4"></td>
+              <td class="py-3 px-4"></td>
+              <td id="table-ft-total" class="py-3 px-4 text-right text-indigo-900 font-bold">£0.00</td>
+              <td class="py-3 px-4"></td>
+            </tr>
+            <tr class="bg-slate-900 text-white">
+              <td colspan="4" class="py-3.5 px-4 font-bold">Combined Monthly Total</td>
+              <td class="py-3.5 px-4"></td>
+              <td class="py-3.5 px-4"></td>
+              <td id="table-tax-summary" class="py-3.5 px-4 text-xs font-normal text-slate-300"></td>
+              <td id="table-grand-total" class="py-3.5 px-4 text-right text-base font-bold text-emerald-400">£0.00</td>
+              <td class="py-3.5 px-4"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- GitHub / Backup & Portability Footer Bar -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="space-y-0.5">
+        <p class="font-semibold text-slate-700">Data Storage & GitHub Pages Ready</p>
+        <p>Your wages, rates, and shift history are stored locally in your browser (<code class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">localStorage</code>). Download a JSON backup anytime to transfer devices.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <button id="export-json-btn" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition">
+          Backup JSON
+        </button>
+        <label class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition cursor-pointer">
+          Restore JSON
+          <input type="file" id="import-json-input" accept=".json" class="hidden" />
+        </label>
+        <button id="load-demo-btn" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium rounded-xl transition">
+          Load Sample Month
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Application Logic (Vanilla JavaScript, thoroughly commented) -->
+  <script>
+    /**
+     * ============================================================================
+     * MONTHLY PAY & WINTER SERVICE TRACKER
+     * Single-file application ready for GitHub Pages (index.html)
+     * ============================================================================
+     */
+
+    // LocalStorage key for persisting all user settings and shift logs
+    const STORAGE_KEY = 'winter_service_pay_tracker_v1';
+
+    // Default 25/26 Winter Service Rates from user's rate tables
+    const DEFAULT_RATES_25_26 = {
+      hourlyWeekday: 18.48,
+      hourlySaturday: 23.15,
+      hourlySundayBank: 26.75,
+      standbyWeekday: 18.50,
+      standbyWeekend: 37.00,
+      standbyBank: 46.36,
+      calloutMode: 'hourly_plus_fee', // 'hourly_plus_fee' | 'hourly_min_hours' | 'flat_only'
+      calloutFee: 25.00,
+      calloutMinHours: 2.0
+    };
+
+    // Initial Application State
+    let appState = {
+      defaultFtWage: 2400.00,        // Default full-time monthly wage
+      monthlyFtOverrides: {},        // Map of 'YYYY-MM' -> custom full-time wage (for pay rises or past changes)
+      ptTaxPercent: 20,              // Optional estimated tax/NI % on part-time earnings
+      rates: { ...DEFAULT_RATES_25_26 },
+      entries: []                    // Array of shift/standby/callout records
+    };
+
+    // Currently viewed month in 'YYYY-MM' format
+    let selectedMonth = getCurrentYearMonth();
+
+    // ============================================================================
+    // UTILITY FUNCTIONS
+    // ============================================================================
+
+    /**
+     * Returns current YYYY-MM string based on local date
+     */
+    function getCurrentYearMonth() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      return `${year}-${month}`;
+    }
+
+    /**
+     * Formats a number as GBP currency (£1,234.56)
+     */
+    function formatGBP(amount) {
+      const num = Number(amount) || 0;
+      return new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(num);
+    }
+
+    /**
+     * Formats 'YYYY-MM' into a readable heading like 'November 2026'
+     */
+    function formatMonthHeading(ym) {
+      const [year, month] = ym.split('-').map(Number);
+      const date = new Date(year, month - 1, 1);
+      return date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    }
+
+    /**
+     * Formats 'YYYY-MM-DD' into 'Mon 16 Nov'
+     */
+    function formatShortDate(dateStr) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const date = new Date(y, m - 1, d);
+      return date.toLocaleDateString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short'
+      });
+    }
+
+    /**
+     * Determines the day category ('weekday', 'saturday', 'sunday') from 'YYYY-MM-DD'
+     */
+    function getDayCategory(dateStr) {
+      if (!dateStr) return 'weekday';
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dayOfWeek = new Date(y, m - 1, d).getDay(); // 0 = Sun, 6 = Sat
+      if (dayOfWeek === 0) return 'sunday';
+      if (dayOfWeek === 6) return 'saturday';
+      return 'weekday';
+    }
+
+    /**
+     * Calculates hours between HH:MM start and HH:MM end.
+     * Automatically handles overnight shifts crossing midnight (e.g., 22:00 to 06:00 = 8 hrs).
+     */
+    function calculateDurationHours(startTime, endTime) {
+      if (!startTime || !endTime) return 0;
+      const [startH, startM] = startTime.split(':').map(Number);
+      const [endH, endM] = endTime.split(':').map(Number);
+
+      const startTotalMins = startH * 60 + startM;
+      let endTotalMins = endH * 60 + endM;
+
+      // If end time is earlier than or equal to start time, assume shift crossed midnight
+      if (endTotalMins < startTotalMins) {
+        endTotalMins += 24 * 60;
+      }
+
+      const diffMins = endTotalMins - startTotalMins;
+      return Math.round((diffMins / 60) * 100) / 100;
+    }
+
+    /**
+     * Shows a non-intrusive toast message (replaces alert())
+     */
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'error'
+        ? 'bg-rose-600 text-white'
+        : type === 'info'
+          ? 'bg-slate-800 text-white'
+          : 'bg-emerald-600 text-white';
+
+      toast.className = `${bgClass} px-4 py-2.5 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 transition-all duration-300 transform translate-y-2 opacity-0`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    /**
+     * Custom Promise-based confirmation modal (replaces window.confirm())
+     */
+    function showConfirm(title, message) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-message').textContent = message;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        const okBtn = document.getElementById('confirm-ok-btn');
+        const cancelBtn = document.getElementById('confirm-cancel-btn');
+
+        const cleanup = (result) => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          okBtn.removeEventListener('click', onOk);
+          cancelBtn.removeEventListener('click', onCancel);
+          resolve(result);
+        };
+
+        const onOk = () => cleanup(true);
+        const onCancel = () => cleanup(false);
+
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+      });
+    }
+
+    // ============================================================================
+    // STORAGE & PAY CALCULATION ENGINE
+    // ============================================================================
+
+    /**
+     * Saves current appState to localStorage
+     */
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        console.error('Failed to save to localStorage:', err);
+        showToast('Warning: Could not save to browser storage.', 'error');
+      }
+    }
+
+    /**
+     * Loads appState from localStorage and merges with defaults safely
+     */
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState = {
+            ...appState,
+            ...parsed,
+            rates: { ...DEFAULT_RATES_25_26, ...(parsed.rates || {}) },
+            monthlyFtOverrides: parsed.monthlyFtOverrides || {},
+            entries: Array.isArray(parsed.entries) ? parsed.entries : []
+          };
+        }
+      } catch (err) {
+        console.error('Failed to parse saved data:', err);
+      }
+    }
+
+    /**
+     * Gets the effective Full-Time Monthly Wage for a specific 'YYYY-MM' month
+     */
+    function getFtWageForMonth(ym) {
+      if (Object.prototype.hasOwnProperty.call(appState.monthlyFtOverrides, ym)) {
+        return Number(appState.monthlyFtOverrides[ym]) || 0;
+      }
+      return Number(appState.defaultFtWage) || 0;
+    }
+
+    /**
+     * Calculates hours, applied rate description, and total GBP pay for a single entry
+     */
+    function calculateEntryPay(entry) {
+      const r = appState.rates;
+      const dayCat = getDayCategory(entry.date);
+      const isBank = Boolean(entry.isBankHoliday);
+
+      // Determine applicable hourly rate
+      let hourlyRate = r.hourlyWeekday;
+      let dayLabel = 'Weekday';
+      if (isBank) {
+        hourlyRate = r.hourlySundayBank;
+        dayLabel = 'Bank Holiday';
+      } else if (dayCat === 'sunday') {
+        hourlyRate = r.hourlySundayBank;
+        dayLabel = 'Sunday';
+      } else if (dayCat === 'saturday') {
+        hourlyRate = r.hourlySaturday;
+        dayLabel = 'Saturday';
+      }
+
+      // 1. WORK SHIFT (Hourly)
+      if (entry.type === 'shift') {
+        const hours = calculateDurationHours(entry.startTime, entry.endTime);
+        const pay = Math.round(hours * hourlyRate * 100) / 100;
+        return {
+          hours,
+          dayLabel,
+          rateText: `${formatGBP(hourlyRate)}/hr`,
+          pay
+        };
+      }
+
+      // 2. STANDBY / ON-CALL ALLOWANCE
+      if (entry.type === 'standby') {
+        let standbyPay = r.standbyWeekday;
+        if (isBank) {
+          standbyPay = r.standbyBank;
+        } else if (dayCat === 'saturday' || dayCat === 'sunday') {
+          standbyPay = r.standbyWeekend;
+          dayLabel = dayCat === 'saturday' ? 'Saturday (Weekend)' : 'Sunday (Weekend)';
+        }
+        return {
+          hours: 0,
+          dayLabel,
+          rateText: `${formatGBP(standbyPay)} flat`,
+          pay: Math.round(standbyPay * 100) / 100
+        };
+      }
+
+      // 3. CALL-OUT
+      if (entry.type === 'callout') {
+        const actualHours = calculateDurationHours(entry.startTime, entry.endTime);
+        const mode = r.calloutMode || 'hourly_plus_fee';
+        let pay = 0;
+        let rateText = '';
+
+        if (mode === 'flat_only') {
+          pay = Number(r.calloutFee) || 0;
+          rateText = `${formatGBP(pay)} flat call-out`;
+        } else if (mode === 'hourly_min_hours') {
+          const paidHours = Math.max(actualHours, Number(r.calloutMinHours) || 0);
+          pay = paidHours * hourlyRate;
+          rateText = `${paidHours.toFixed(2)}h × ${formatGBP(hourlyRate)}`;
+        } else {
+          // hourly_plus_fee
+          const fee = Number(r.calloutFee) || 0;
+          pay = (actualHours * hourlyRate) + fee;
+          rateText = `${formatGBP(hourlyRate)}/hr + ${formatGBP(fee)}`;
+        }
+
+        return {
+          hours: actualHours,
+          dayLabel,
+          rateText,
+          pay: Math.round(pay * 100) / 100
+        };
+      }
+
+      return { hours: 0, dayLabel, rateText: '—', pay: 0 };
+    }
+
+    // ============================================================================
+    // UI RENDERING & INTERACTION HANDLERS
+    // ============================================================================
+
+    /**
+     * Syncs the Settings Drawer inputs with current appState
+     */
+    function populateSettingsInputs() {
+      document.getElementById('setting-ft-wage').value = getFtWageForMonth(selectedMonth).toFixed(2);
+      document.getElementById('quick-ft-wage').value = getFtWageForMonth(selectedMonth).toFixed(2);
+      document.getElementById('setting-pt-tax').value = appState.ptTaxPercent;
+
+      document.getElementById('rate-hourly-weekday').value = appState.rates.hourlyWeekday;
+      document.getElementById('rate-hourly-saturday').value = appState.rates.hourlySaturday;
+      document.getElementById('rate-hourly-sunday').value = appState.rates.hourlySundayBank;
+
+      document.getElementById('rate-standby-weekday').value = appState.rates.standbyWeekday;
+      document.getElementById('rate-standby-weekend').value = appState.rates.standbyWeekend;
+      document.getElementById('rate-standby-bank').value = appState.rates.standbyBank;
+
+      document.getElementById('rate-callout-mode').value = appState.rates.calloutMode;
+      document.getElementById('rate-callout-fee').value = appState.rates.calloutFee;
+      document.getElementById('rate-callout-min-hours').value = appState.rates.calloutMinHours;
+    }
+
+    /**
+     * Updates the live preview pill inside the Add Entry form as the user selects date/times
+     */
+    function updateFormLivePreview() {
+      const dateVal = document.getElementById('entry-date').value;
+      const typeVal = document.getElementById('entry-type').value;
+      const startVal = document.getElementById('entry-start').value;
+      const endVal = document.getElementById('entry-end').value;
+      const isBank = document.getElementById('entry-bank-holiday').checked;
+
+      // Show or hide time inputs depending on whether Standby is selected
+      const startWrap = document.getElementById('start-time-wrapper');
+      const endWrap = document.getElementById('end-time-wrapper');
+      if (typeVal === 'standby') {
+        startWrap.classList.add('opacity-50');
+        endWrap.classList.add('opacity-50');
+      } else {
+        startWrap.classList.remove('opacity-50');
+        endWrap.classList.remove('opacity-50');
+      }
+
+      const calc = calculateEntryPay({
+        date: dateVal,
+        type: typeVal,
+        startTime: startVal,
+        endTime: endVal,
+        isBankHoliday: isBank
+      });
+
+      document.getElementById('preview-day-badge').textContent = calc.dayLabel;
+      document.getElementById('preview-hours').textContent = typeVal === 'standby'
+        ? 'On-Call Day'
+        : `${calc.hours.toFixed(2)} hrs`;
+      document.getElementById('preview-pay').textContent = formatGBP(calc.pay);
+    }
+
+    /**
+     * Main render function: updates summary cards, table rows, and totals for selectedMonth
+     */
+    function renderDashboard() {
+      // Update header month controls
+      document.getElementById('month-selector').value = selectedMonth;
+      document.getElementById('display-month-label').textContent = formatMonthHeading(selectedMonth);
+
+      // Sync wage inputs
+      const ftWage = getFtWageForMonth(selectedMonth);
+      document.getElementById('quick-ft-wage').value = ftWage.toFixed(2);
+      document.getElementById('setting-ft-wage').value = ftWage.toFixed(2);
+
+      // Ensure entry date defaults inside the selected month if not currently editing
+      const editingId = document.getElementById('editing-entry-id').value;
+      const entryDateInput = document.getElementById('entry-date');
+      if (!editingId && (!entryDateInput.value || !entryDateInput.value.startsWith(selectedMonth))) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        entryDateInput.value = todayStr.startsWith(selectedMonth) ? todayStr : `${selectedMonth}-01`;
+      }
+
+      // Filter entries belonging to selectedMonth
+      const monthEntries = appState.entries
+        .filter(item => item.date && item.date.startsWith(selectedMonth))
+        .sort((a, b) => a.date.localeCompare(b.date) || (a.startTime || '').localeCompare(b.startTime || ''));
+
+      // Calculate monthly category totals
+      let shiftHours = 0;
+      let shiftPay = 0;
+      let standbyCount = 0;
+      let standbyPay = 0;
+      let calloutCount = 0;
+      let calloutHours = 0;
+      let calloutPay = 0;
+
+      monthEntries.forEach(entry => {
+        const res = calculateEntryPay(entry);
+        if (entry.type === 'shift') {
+          shiftHours += res.hours;
+          shiftPay += res.pay;
+        } else if (entry.type === 'standby') {
+          standbyCount += 1;
+          standbyPay += res.pay;
+        } else if (entry.type === 'callout') {
+          calloutCount += 1;
+          calloutHours += res.hours;
+          calloutPay += res.pay;
+        }
+      });
+
+      const ptTotal = Math.round((shiftPay + standbyPay + calloutPay) * 100) / 100;
+      const combinedGross = Math.round((ftWage + ptTotal) * 100) / 100;
+      const taxRate = (Number(appState.ptTaxPercent) || 0) / 100;
+      const ptAfterTax = ptTotal * (1 - taxRate);
+      const combinedEstimatedNet = Math.round((ftWage + ptAfterTax) * 100) / 100;
+
+      // Update Summary Cards
+      document.getElementById('summary-ft-wage').textContent = formatGBP(ftWage);
+      document.getElementById('summary-shift-hours').textContent = `${shiftHours.toFixed(2)} hrs`;
+      document.getElementById('summary-shift-pay').textContent = formatGBP(shiftPay);
+      document.getElementById('summary-standby-count').textContent = `${standbyCount} ${standbyCount === 1 ? 'day' : 'days'}`;
+      document.getElementById('summary-standby-pay').textContent = formatGBP(standbyPay);
+      document.getElementById('summary-callout-count').textContent = `${calloutCount} ${calloutCount === 1 ? 'call' : 'calls'}`;
+      document.getElementById('summary-callout-hours').textContent = `${calloutHours.toFixed(2)} hrs logged`;
+      document.getElementById('summary-callout-pay').textContent = formatGBP(calloutPay);
+
+      document.getElementById('summary-pt-subtotal-badge').textContent = `PT: ${formatGBP(ptTotal)}`;
+      document.getElementById('summary-grand-total').textContent = formatGBP(combinedGross);
+      document.getElementById('summary-after-tax-note').textContent = taxRate > 0
+        ? `Est. net after ${appState.ptTaxPercent}% PT tax: ${formatGBP(combinedEstimatedNet)}`
+        : 'Showing gross combined pay';
+
+      // Render Table Rows (applying optional category filter)
+      const activeFilter = document.getElementById('filter-type').value;
+      const visibleEntries = activeFilter === 'all'
+        ? monthEntries
+        : monthEntries.filter(e => e.type === activeFilter);
+
+      const tbody = document.getElementById('entries-table-body');
+      tbody.innerHTML = '';
+
+      if (visibleEntries.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-10 px-4 text-center text-slate-400">
+              <p class="text-sm font-medium text-slate-500">No part-time entries logged for ${formatMonthHeading(selectedMonth)}.</p>
+              <p class="text-xs mt-1">Use the form above to add a shift, standby allowance, or call-out.</p>
+            </td>
+          </tr>
+        `;
+      } else {
+        visibleEntries.forEach(entry => {
+          const res = calculateEntryPay(entry);
+
+          // Category Badge Styling
+          let badgeHtml = '';
+          if (entry.type === 'shift') {
+            badgeHtml = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/70">Work Shift</span>`;
+          } else if (entry.type === 'standby') {
+            badgeHtml = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/70">Standby</span>`;
+          } else {
+            badgeHtml = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200/70">Call-Out</span>`;
+          }
+
+          const bankTag = entry.isBankHoliday
+            ? `<span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold bg-rose-100 text-rose-700 rounded">Bank Hol</span>`
+            : '';
+
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50/90 transition';
+          tr.innerHTML = `
+            <td class="py-3 px-4 whitespace-nowrap font-medium text-slate-900">
+              ${formatShortDate(entry.date)} ${bankTag}
+            </td>
+            <td class="py-3 px-4 whitespace-nowrap">${badgeHtml}</td>
+            <td class="py-3 px-4 whitespace-nowrap font-mono text-xs text-slate-600">
+              ${entry.type === 'standby' && !entry.startTime ? '—' : (entry.startTime || '—')}
+            </td>
+            <td class="py-3 px-4 whitespace-nowrap font-mono text-xs text-slate-600">
+              ${entry.type === 'standby' && !entry.endTime ? '—' : (entry.endTime || '—')}
+            </td>
+            <td class="py-3 px-4 whitespace-nowrap text-right font-mono text-xs text-slate-700">
+              ${entry.type === 'standby' ? '—' : `${res.hours.toFixed(2)}`}
+            </td>
+            <td class="py-3 px-4 whitespace-nowrap text-right text-xs text-slate-500">
+              ${res.rateText}
+            </td>
+            <td class="py-3 px-4 text-xs text-slate-500 max-w-[180px] truncate" title="${entry.notes || ''}">
+              ${entry.notes || '—'}
+            </td>
+            <td class="py-3 px-4 whitespace-nowrap text-right font-semibold text-slate-900">
+              ${formatGBP(res.pay)}
+            </td>
+            <td class="py-3 px-4 whitespace-nowrap text-right">
+              <div class="inline-flex items-center gap-1">
+                <button data-edit-id="${entry.id}" title="Edit Entry" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                  </svg>
+                </button>
+                <button data-delete-id="${entry.id}" title="Delete Entry" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Update Table Footer Totals
+      const totalLoggedHours = shiftHours + calloutHours;
+      document.getElementById('table-total-hours').textContent = `${totalLoggedHours.toFixed(2)} hrs`;
+      document.getElementById('table-pt-total').textContent = formatGBP(ptTotal);
+      document.getElementById('table-ft-total').textContent = formatGBP(ftWage);
+      document.getElementById('table-grand-total').textContent = formatGBP(combinedGross);
+      document.getElementById('table-tax-summary').textContent = taxRate > 0
+        ? `Est. Take-Home (${appState.ptTaxPercent}% PT tax): ${formatGBP(combinedEstimatedNet)}`
+        : '';
+
+      updateFormLivePreview();
+    }
+
+    /**
+     * Shifts selectedMonth by delta months (-1 for previous, +1 for next)
+     */
+    function changeMonth(delta) {
+      const [year, month] = selectedMonth.split('-').map(Number);
+      const date = new Date(year, month - 1 + delta, 1);
+      const newY = date.getFullYear();
+      const newM = String(date.getMonth() + 1).padStart(2, '0');
+      selectedMonth = `${newY}-${newM}`;
+      renderDashboard();
+    }
+
+    /**
+     * Updates Full-Time Wage according to the selected scope (pay rise support)
+     */
+    function applyFullTimeWageUpdate(newWageVal, scope) {
+      const val = Math.max(0, Number(newWageVal) || 0);
+
+      if (scope === 'only-selected') {
+        appState.monthlyFtOverrides[selectedMonth] = val;
+      } else if (scope === 'all-months') {
+        appState.defaultFtWage = val;
+        appState.monthlyFtOverrides = {};
+      } else {
+        // 'from-selected' (Default for a pay rise: keeps past months intact, updates current & future)
+        appState.defaultFtWage = val;
+        // Remove any overrides on or after selectedMonth
+        Object.keys(appState.monthlyFtOverrides).forEach(ym => {
+          if (ym >= selectedMonth) {
+            delete appState.monthlyFtOverrides[ym];
+          }
+        });
+      }
+
+      saveState();
+      renderDashboard();
+      showToast(`Full-time monthly wage updated to ${formatGBP(val)}`);
+    }
+
+    /**
+     * Resets the entry form back to "Add Entry" mode
+     */
+    function resetEntryForm() {
+      document.getElementById('editing-entry-id').value = '';
+      document.getElementById('form-heading').textContent = 'Log Part-Time Shift, Standby or Call-Out';
+      document.getElementById('submit-btn-text').textContent = 'Add Entry';
+      document.getElementById('cancel-edit-btn').classList.add('hidden');
+      document.getElementById('entry-notes').value = '';
+      document.getElementById('entry-bank-holiday').checked = false;
+      updateFormLivePreview();
+    }
+
+    // ============================================================================
+    // EVENT LISTENERS INITIALIZATION
+    // ============================================================================
+
+    function initEventListeners() {
+      // Month Navigation
+      document.getElementById('prev-month-btn').addEventListener('click', () => changeMonth(-1));
+      document.getElementById('next-month-btn').addEventListener('click', () => changeMonth(1));
+      document.getElementById('today-btn').addEventListener('click', () => {
+        selectedMonth = getCurrentYearMonth();
+        renderDashboard();
+      });
+      document.getElementById('month-selector').addEventListener('change', (e) => {
+        if (e.target.value) {
+          selectedMonth = e.target.value;
+          renderDashboard();
+        }
+      });
+
+      // Toggle Settings Drawer
+      const settingsPanel = document.getElementById('settings-panel');
+      document.getElementById('toggle-settings-btn').addEventListener('click', () => {
+        populateSettingsInputs();
+        settingsPanel.classList.toggle('hidden');
+      });
+      document.getElementById('open-wage-rise-btn').addEventListener('click', () => {
+        populateSettingsInputs();
+        settingsPanel.classList.remove('hidden');
+        document.getElementById('setting-ft-wage').focus();
+      });
+      document.getElementById('close-settings-btn').addEventListener('click', () => {
+        settingsPanel.classList.add('hidden');
+      });
+
+      // Quick Full-Time Wage inline input
+      document.getElementById('quick-ft-wage').addEventListener('change', (e) => {
+        applyFullTimeWageUpdate(e.target.value, 'from-selected');
+      });
+
+      // Settings Panel Full-Time Wage input
+      document.getElementById('setting-ft-wage').addEventListener('change', (e) => {
+        const scope = document.getElementById('setting-ft-scope').value;
+        applyFullTimeWageUpdate(e.target.value, scope);
+      });
+
+      // Part-Time Tax % Setting
+      document.getElementById('setting-pt-tax').addEventListener('change', (e) => {
+        appState.ptTaxPercent = Math.min(100, Math.max(0, Number(e.target.value) || 0));
+        saveState();
+        renderDashboard();
+      });
+
+      // Rate Inputs Auto-Save
+      const rateBindings = [
+        ['rate-hourly-weekday', 'hourlyWeekday'],
+        ['rate-hourly-saturday', 'hourlySaturday'],
+        ['rate-hourly-sunday', 'hourlySundayBank'],
+        ['rate-standby-weekday', 'standbyWeekday'],
+        ['rate-standby-weekend', 'standbyWeekend'],
+        ['rate-standby-bank', 'standbyBank'],
+        ['rate-callout-fee', 'calloutFee'],
+        ['rate-callout-min-hours', 'calloutMinHours']
+      ];
+
+      rateBindings.forEach(([elementId, rateKey]) => {
+        document.getElementById(elementId).addEventListener('change', (e) => {
+          appState.rates[rateKey] = Math.max(0, Number(e.target.value) || 0);
+          saveState();
+          renderDashboard();
+          showToast('Rate updated');
+        });
+      });
+
+      document.getElementById('rate-callout-mode').addEventListener('change', (e) => {
+        appState.rates.calloutMode = e.target.value;
+        saveState();
+        renderDashboard();
+      });
+
+      // Reset 25/26 Rates Button
+      document.getElementById('reset-2526-rates-btn').addEventListener('click', async () => {
+        const confirmed = await showConfirm(
+          'Reset to 25/26 Rates?',
+          'This will restore all hourly and standby rates back to the default 25/26 schedule.'
+        );
+        if (confirmed) {
+          appState.rates = { ...DEFAULT_RATES_25_26 };
+          saveState();
+          populateSettingsInputs();
+          renderDashboard();
+          showToast('Restored default 25/26 rates');
+        }
+      });
+
+      // Live Preview updates on form input change
+      ['entry-date', 'entry-type', 'entry-start', 'entry-end', 'entry-bank-holiday'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateFormLivePreview);
+        document.getElementById(id).addEventListener('change', updateFormLivePreview);
+      });
+
+      // Preset shift time buttons
+      document.querySelectorAll('.preset-time-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('entry-start').value = btn.dataset.start;
+          document.getElementById('entry-end').value = btn.dataset.end;
+          updateFormLivePreview();
+        });
+      });
+
+      // Submit Entry Form (Add or Update)
+      document.getElementById('entry-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const editingId = document.getElementById('editing-entry-id').value;
+        const date = document.getElementById('entry-date').value;
+        const type = document.getElementById('entry-type').value;
+        const startTime = document.getElementById('entry-start').value;
+        const endTime = document.getElementById('entry-end').value;
+        const isBankHoliday = document.getElementById('entry-bank-holiday').checked;
+        const notes = document.getElementById('entry-notes').value.trim();
+
+        if (!date) {
+          showToast('Please select a valid date.', 'error');
+          return;
+        }
+
+        if ((type === 'shift' || type === 'callout') && (!startTime || !endTime)) {
+          showToast('Please enter both start and end times.', 'error');
+          return;
+        }
+
+        if (editingId) {
+          const idx = appState.entries.findIndex(item => item.id === editingId);
+          if (idx !== -1) {
+            appState.entries[idx] = {
+              ...appState.entries[idx],
+              date,
+              type,
+              startTime: type === 'standby' ? '' : startTime,
+              endTime: type === 'standby' ? '' : endTime,
+              isBankHoliday,
+              notes
+            };
+          }
+          showToast('Entry updated');
+        } else {
+          appState.entries.push({
+            id: 'entry_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+            date,
+            type,
+            startTime: type === 'standby' ? '' : startTime,
+            endTime: type === 'standby' ? '' : endTime,
+            isBankHoliday,
+            notes
+          });
+          showToast('Entry added to ' + formatMonthHeading(date.slice(0, 7)));
+        }
+
+        // Switch view to the month of the logged entry so the user sees it immediately
+        selectedMonth = date.slice(0, 7);
+        saveState();
+        resetEntryForm();
+        renderDashboard();
+      });
+
+      // Cancel Edit Button
+      document.getElementById('cancel-edit-btn').addEventListener('click', resetEntryForm);
+
+      // Table Edit & Delete Event Delegation
+      document.getElementById('entries-table-body').addEventListener('click', async (e) => {
+        const editBtn = e.target.closest('[data-edit-id]');
+        const deleteBtn = e.target.closest('[data-delete-id]');
+
+        if (editBtn) {
+          const id = editBtn.dataset.editId;
+          const entry = appState.entries.find(item => item.id === id);
+          if (!entry) return;
+
+          document.getElementById('editing-entry-id').value = entry.id;
+          document.getElementById('entry-date').value = entry.date;
+          document.getElementById('entry-type').value = entry.type;
+          document.getElementById('entry-start').value = entry.startTime || '18:00';
+          document.getElementById('entry-end').value = entry.endTime || '22:00';
+          document.getElementById('entry-bank-holiday').checked = Boolean(entry.isBankHoliday);
+          document.getElementById('entry-notes').value = entry.notes || '';
+
+          document.getElementById('form-heading').textContent = 'Edit Logged Entry';
+          document.getElementById('submit-btn-text').textContent = 'Save Changes';
+          document.getElementById('cancel-edit-btn').classList.remove('hidden');
+          updateFormLivePreview();
+          document.getElementById('entry-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.deleteId;
+          const confirmed = await showConfirm(
+            'Delete Entry?',
+            'Are you sure you want to remove this entry from your pay calculation?'
+          );
+          if (confirmed) {
+            appState.entries = appState.entries.filter(item => item.id !== id);
+            if (document.getElementById('editing-entry-id').value === id) {
+              resetEntryForm();
+            }
+            saveState();
+            renderDashboard();
+            showToast('Entry deleted', 'info');
+          }
+        }
+      });
+
+      // Filter Table Dropdown
+      document.getElementById('filter-type').addEventListener('change', renderDashboard);
+
+      // Export CSV for Selected Month
+      document.getElementById('export-csv-btn').addEventListener('click', () => {
+        const monthEntries = appState.entries
+          .filter(item => item.date && item.date.startsWith(selectedMonth))
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        const rows = [
+          ['Date', 'Day Category', 'Type', 'Bank Holiday', 'Start Time', 'End Time', 'Hours', 'Rate Applied', 'Notes', 'Pay (GBP)']
+        ];
+
+        let ptTotal = 0;
+        monthEntries.forEach(entry => {
+          const res = calculateEntryPay(entry);
+          ptTotal += res.pay;
+          rows.push([
+            entry.date,
+            res.dayLabel,
+            entry.type.toUpperCase(),
+            entry.isBankHoliday ? 'Yes' : 'No',
+            entry.startTime || '',
+            entry.endTime || '',
+            res.hours.toFixed(2),
+            res.rateText,
+            `"${(entry.notes || '').replace(/"/g, '""')}"`,
+            res.pay.toFixed(2)
+          ]);
+        });
+
+        const ftWage = getFtWageForMonth(selectedMonth);
+        rows.push([]);
+        rows.push(['Part-Time Subtotal', '', '', '', '', '', '', '', '', ptTotal.toFixed(2)]);
+        rows.push(['Full-Time Base Wage', '', '', '', '', '', '', '', '', ftWage.toFixed(2)]);
+        rows.push(['Combined Monthly Total', '', '', '', '', '', '', '', '', (ftWage + ptTotal).toFixed(2)]);
+
+        const csvContent = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `pay-summary-${selectedMonth}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast(`Exported pay-summary-${selectedMonth}.csv`);
+      });
+
+      // Export Full JSON Backup
+      document.getElementById('export-json-btn').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `winter-service-pay-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast('JSON backup downloaded');
+      });
+
+      // Import JSON Backup
+      document.getElementById('import-json-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const imported = JSON.parse(event.target.result);
+            if (!imported || typeof imported !== 'object' || !Array.isArray(imported.entries)) {
+              throw new Error('Invalid backup format');
+            }
+            appState = {
+              ...appState,
+              ...imported,
+              rates: { ...DEFAULT_RATES_25_26, ...(imported.rates || {}) },
+              monthlyFtOverrides: imported.monthlyFtOverrides || {}
+            };
+            saveState();
+            populateSettingsInputs();
+            renderDashboard();
+            showToast('Backup restored successfully');
+          } catch (err) {
+            showToast('Invalid JSON backup file.', 'error');
+          }
+          e.target.value = '';
+        };
+        reader.readAsText(file);
+      });
+
+      // Load Sample Data for Quick Testing
+      document.getElementById('load-demo-btn').addEventListener('click', async () => {
+        const confirmed = await showConfirm(
+          'Add Sample Winter Service Entries?',
+          `This will add sample shifts, standby days, and a call-out to ${formatMonthHeading(selectedMonth)} so you can test the calculator.`
+        );
+        if (!confirmed) return;
+
+        const samples = [
+          { date: `${selectedMonth}-03`, type: 'standby', startTime: '', endTime: '', isBankHoliday: false, notes: 'Tuesday on-call' },
+          { date: `${selectedMonth}-04`, type: 'shift', startTime: '18:00', endTime: '22:30', isBankHoliday: false, notes: 'Evening grit run' },
+          { date: `${selectedMonth}-07`, type: 'standby', startTime: '', endTime: '', isBankHoliday: false, notes: 'Saturday standby' },
+          { date: `${selectedMonth}-07`, type: 'callout', startTime: '02:30', endTime: '05:00', isBankHoliday: false, notes: 'Early frost call-out' },
+          { date: `${selectedMonth}-08`, type: 'shift', startTime: '06:00', endTime: '11:00', isBankHoliday: false, notes: 'Sunday morning run' }
+        ];
+
+        samples.forEach((s, i) => {
+          appState.entries.push({
+            id: 'demo_' + Date.now() + '_' + i,
+            ...s
+          });
+        });
+
+        saveState();
+        renderDashboard();
+        showToast('Sample entries added');
+      });
+    }
+
+    // Boot Application on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      populateSettingsInputs();
+      initEventListeners();
+      renderDashboard();
+    });
+  </script>
+</body>
+</html>
