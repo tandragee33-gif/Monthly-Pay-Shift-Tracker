@@ -92,67 +92,67 @@
         </button>
 
         <!-- Toggle Rates & Settings Button -->
-        <button id="toggle-settings-btn" class="px-3.5 py-2 text-xs sm:text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl hover:bg-indigo-100 transition flex items-center gap-1.5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-          </svg>
-          <span>Wages & Rates</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Content Wrapper -->
-  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1">
-
-    <!-- Collapsible Wage & 25/26 Rate Settings Drawer -->
-    <section id="settings-panel" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
-      <div class="px-6 py-4 bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div>
-          <h2 class="text-base font-semibold">Full-Time Wage & Part-Time 25/26 Rates</h2>
-          <p class="text-xs text-slate-300">Saved automatically in your browser. Update your full-time wage anytime you get a pay rise.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="reset-2526-rates-btn" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition">
-            Reset 25/26 Rates
-          </button>
-          <button id="close-settings-btn" class="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition">
-            Done
-          </button>
-        </div>
-      </div>
-
-      <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Column 1: Full-Time Monthly Wage & Tax Settings -->
-        <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600">1. Full-Time Wage & Tax</h3>
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Column 1: Full-Time Gross Monthly Wage & UK Tax/NI Settings -->
+        <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-600">1. Full-Time Gross & UK Tax</h3>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">26/27 PAYE</span>
+          </div>
 
           <div>
             <label for="setting-ft-wage" class="block text-xs font-medium text-slate-700 mb-1">
-              Normal Monthly Full-Time Wage (£)
+              Gross Monthly Full-Time Wage (£)
             </label>
             <input type="number" step="0.01" min="0" id="setting-ft-wage" placeholder="e.g. 2400.00"
               class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-semibold" />
-            <p class="text-[11px] text-slate-500 mt-1">Enter your standard monthly amount (either take-home after tax, or gross).</p>
+            <p class="text-[11px] text-slate-500 mt-1">Enter your gross monthly salary before tax (combined with PT on one payslip).</p>
           </div>
 
-          <div class="flex flex-col gap-1.5 pt-1">
+          <div class="flex flex-col gap-1">
             <span class="text-xs font-medium text-slate-700">Apply Full-Time Wage Change To:</span>
-            <select id="setting-ft-scope" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+            <select id="setting-ft-scope" class="w-full px-3 py-1.5 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
               <option value="from-selected">Selected Month & Future Months (Pay Rise)</option>
               <option value="all-months">All Months (Past & Future)</option>
               <option value="only-selected">Only Selected Month</option>
             </select>
           </div>
 
-          <div class="pt-2 border-t border-slate-200">
-            <label for="setting-pt-tax" class="block text-xs font-medium text-slate-700 mb-1">
-              Est. Tax / NI Deduction on Part-Time (%)
+          <div class="pt-2 border-t border-slate-200 space-y-2.5">
+            <label class="flex items-center justify-between cursor-pointer select-none">
+              <span class="text-xs font-semibold text-slate-700">Auto UK Tax & NI (Combined)</span>
+              <input type="checkbox" id="setting-tax-enabled" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
             </label>
-            <div class="flex items-center gap-2">
-              <input type="number" step="1" min="0" max="100" id="setting-pt-tax"
-                class="w-24 px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-              <span class="text-xs text-slate-500">e.g. 20% basic rate (0% for gross)</span>
+
+            <label class="flex items-center justify-between cursor-pointer select-none">
+              <span class="text-xs font-medium text-slate-600">Include National Insurance (8% / 2%)</span>
+              <input type="checkbox" id="setting-ni-enabled" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
+            </label>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="setting-personal-allowance" class="block text-[11px] font-medium text-slate-600 mb-0.5">Tax-Free / mo (£)</label>
+                <input type="number" step="0.01" min="0" id="setting-personal-allowance"
+                  class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+              </div>
+              <div>
+                <label for="setting-basic-limit" class="block text-[11px] font-medium text-slate-600 mb-0.5">20% Limit / mo (£)</label>
+                <input type="number" step="0.01" min="0" id="setting-basic-limit"
+                  class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="setting-higher-limit" class="block text-[11px] font-medium text-slate-600 mb-0.5">40% Limit / mo (£)</label>
+                <input type="number" step="0.01" min="0" id="setting-higher-limit"
+                  class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+              </div>
+              <div>
+                <label for="setting-pension-pct" class="block text-[11px] font-medium text-slate-600 mb-0.5">Pension (%)</label>
+                <input type="number" step="0.5" min="0" max="100" id="setting-pension-pct"
+                  class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+              </div>
             </div>
           </div>
         </div>
@@ -259,93 +259,99 @@
     </section>
 
     <!-- Monthly Summary Dashboard Cards -->
-    <section aria-label="Monthly Pay Summary">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+    <section aria-label="Monthly Pay Summary" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <h2 class="text-sm font-semibold text-slate-600 uppercase tracking-wider">
           Pay Summary for <span id="display-month-label" class="text-indigo-600 font-bold">November 2026</span>
         </h2>
-        <div class="flex items-center gap-2 text-xs text-slate-500">
-          <span>Quick Full-Time Wage:</span>
+        <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <span>Quick Full-Time Gross Wage:</span>
           <div class="relative inline-flex items-center">
             <span class="absolute left-2.5 text-slate-400 font-medium">£</span>
             <input type="number" step="0.01" min="0" id="quick-ft-wage"
               class="w-32 pl-6 pr-2 py-1 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
           </div>
-          <button type="button" id="open-wage-rise-btn" class="text-indigo-600 hover:underline font-medium">Edit / Pay Rise</button>
+          <button type="button" id="open-wage-rise-btn" class="text-indigo-600 hover:underline font-medium">Pay Rise / Tax Settings</button>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-        <!-- Card 1: Full-Time Base Wage -->
+      <!-- 5 Primary Summary Cards (Combined Payslip View) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- Card 1: Full-Time Gross Wage -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Full-Time Base Wage</span>
+            <span class="text-xs font-medium text-slate-500">Full-Time Gross</span>
             <span class="w-2 h-2 rounded-full bg-slate-400"></span>
           </div>
           <div class="mt-2">
             <div id="summary-ft-wage" class="text-2xl font-bold text-slate-900">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">Fixed monthly salary</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Fixed gross monthly salary</p>
           </div>
         </div>
 
-        <!-- Card 2: Base Shift & Call-Out Hours Pay -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <!-- Card 2: Part-Time Gross (Base + NDA + Standby) -->
+        <div class="bg-white p-4 rounded-2xl border border-emerald-200/80 shadow-2xs flex flex-col justify-between">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Base Shift & Call-Outs</span>
+            <span class="text-xs font-medium text-emerald-800">Part-Time Gross</span>
             <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-50 text-emerald-700" id="summary-shift-hours">0.00 hrs</span>
           </div>
           <div class="mt-2">
-            <div id="summary-shift-pay" class="text-2xl font-bold text-emerald-700">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5" id="summary-callout-subtext">0 call-outs logged</p>
+            <div id="summary-pt-subtotal" class="text-2xl font-bold text-emerald-700">£0.00</div>
+            <p class="text-[11px] text-slate-500 mt-0.5" id="summary-pt-components">Base £0.00 · NDA £0.00 · Standby £0.00</p>
           </div>
         </div>
 
-        <!-- Card 3: Night Duty Allowance (NDA) -->
+        <!-- Card 3: Combined Gross Pay -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Night Duty Allowance</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-sky-50 text-sky-700" id="summary-nda-hours">0.00 night hrs</span>
+            <span class="text-xs font-medium text-slate-500">Combined Gross</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-100 text-slate-700">Single Payslip</span>
           </div>
           <div class="mt-2">
-            <div id="summary-nda-pay" class="text-2xl font-bold text-sky-700">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">+25% (8–11pm) / +33⅓% (11pm–6am)</p>
+            <div id="summary-combined-gross" class="text-2xl font-bold text-slate-900">£0.00</div>
+            <p class="text-[11px] text-slate-400 mt-0.5" id="summary-tax-band-badge">Tax Band: Basic Rate (20%)</p>
           </div>
         </div>
 
-        <!-- Card 4: Standby / On-Call Allowance -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <!-- Card 4: Tax & National Insurance Deductions -->
+        <div class="bg-white p-4 rounded-2xl border border-rose-200/80 shadow-2xs flex flex-col justify-between">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Standby / On-Call</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-50 text-amber-700" id="summary-standby-count">0 days</span>
+            <span class="text-xs font-medium text-rose-800">Tax & NI Deductions</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-rose-50 text-rose-700" id="summary-effective-rate">0% eff.</span>
           </div>
           <div class="mt-2">
-            <div id="summary-standby-pay" class="text-2xl font-bold text-amber-700">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">Availability allowances</p>
+            <div id="summary-total-deductions" class="text-2xl font-bold text-rose-600">-£0.00</div>
+            <p class="text-[11px] text-slate-500 mt-0.5" id="summary-deductions-subtext">Tax: £0.00 · NI: £0.00</p>
           </div>
         </div>
 
-        <!-- Card 5: Part-Time Subtotal -->
-        <div class="bg-white p-4 rounded-2xl border border-indigo-200 shadow-2xs flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-indigo-700">Part-Time Subtotal</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-indigo-50 text-indigo-700">Gross PT</span>
-          </div>
-          <div class="mt-2">
-            <div id="summary-pt-subtotal" class="text-2xl font-bold text-indigo-700">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">Base + NDA + Standby</p>
-          </div>
-        </div>
-
-        <!-- Card 6: Combined Monthly Total -->
+        <!-- Card 5: Estimated Net Take-Home Pay -->
         <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-sm flex flex-col justify-between">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-indigo-100">Combined Total</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-indigo-500 text-white" id="summary-pt-subtotal-badge">PT: £0.00</span>
+            <span class="text-xs font-medium text-indigo-100">Est. Take-Home (Net)</span>
+            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-indigo-500 text-white" id="summary-pt-net-boost">+£0.00 net PT</span>
           </div>
           <div class="mt-2">
-            <div id="summary-grand-total" class="text-2xl font-bold tracking-tight">£0.00</div>
-            <p id="summary-after-tax-note" class="text-[11px] text-indigo-200 mt-0.5">Est. after PT tax: £0.00</p>
+            <div id="summary-net-total" class="text-2xl font-bold tracking-tight">£0.00</div>
+            <p id="summary-after-tax-note" class="text-[11px] text-indigo-200 mt-0.5">Combined net pay after PAYE & NI</p>
           </div>
+        </div>
+      </div>
+
+      <!-- Compact Payslip Deduction Breakdown Strip -->
+      <div class="bg-white rounded-2xl border border-slate-200 px-5 py-3.5 shadow-2xs flex flex-wrap items-center justify-between gap-y-2 gap-x-6 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-slate-800">Combined Payslip Breakdown:</span>
+          <span id="payslip-mode-pill" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/70">UK PAYE 2026/27 Active</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-slate-600">
+          <div>Base Shifts: <strong id="strip-base-pay" class="text-slate-900">£0.00</strong></div>
+          <div>Night Duty (NDA): <strong id="strip-nda-pay" class="text-sky-700">£0.00</strong> <span id="strip-nda-hours" class="text-slate-400">(0.00h)</span></div>
+          <div>Standby: <strong id="strip-standby-pay" class="text-amber-700">£0.00</strong> <span id="strip-standby-days" class="text-slate-400">(0d)</span></div>
+          <div id="strip-pension-wrap" class="hidden">Pension: <strong id="strip-pension-ded" class="text-slate-800">-£0.00</strong></div>
+          <div>Income Tax (20%/40%): <strong id="strip-income-tax" class="text-rose-600">-£0.00</strong></div>
+          <div>National Insurance: <strong id="strip-ni-tax" class="text-rose-600">-£0.00</strong></div>
+          <div>Final Net Pay: <strong id="strip-net-pay" class="text-indigo-700 text-sm">£0.00</strong></div>
         </div>
       </div>
     </section>
@@ -513,14 +519,20 @@
               <td class="py-3 px-4"></td>
             </tr>
             <tr class="bg-indigo-50/60 border-t border-indigo-100">
-              <td colspan="3" class="py-3 px-4 text-indigo-900">Full-Time Base Monthly Wage</td>
+              <td colspan="3" class="py-3 px-4 text-indigo-900">Full-Time Gross Monthly Wage</td>
               <td class="py-3 px-4 text-right text-xs text-indigo-400">Fixed</td>
               <td colspan="4" class="py-3 px-4"></td>
               <td id="table-ft-total" class="py-3 px-4 text-right text-indigo-900 font-bold">£0.00</td>
               <td class="py-3 px-4"></td>
             </tr>
+            <tr class="bg-slate-100 border-t border-slate-200">
+              <td colspan="3" class="py-3 px-4 text-slate-900 font-bold">Combined Gross Pay (Before Tax & NI)</td>
+              <td colspan="5" id="table-deductions-summary" class="py-3 px-4 text-xs font-medium text-rose-700"></td>
+              <td id="table-combined-gross" class="py-3 px-4 text-right font-bold text-slate-900">£0.00</td>
+              <td class="py-3 px-4"></td>
+            </tr>
             <tr class="bg-slate-900 text-white">
-              <td colspan="3" class="py-3.5 px-4 font-bold">Combined Monthly Total</td>
+              <td colspan="3" class="py-3.5 px-4 font-bold">Estimated Net Take-Home Pay (After Tax & NI)</td>
               <td colspan="5" id="table-tax-summary" class="py-3.5 px-4 text-xs font-normal text-slate-300"></td>
               <td id="table-grand-total" class="py-3.5 px-4 text-right text-base font-bold text-emerald-400">£0.00</td>
               <td class="py-3.5 px-4"></td>
@@ -579,9 +591,16 @@
 
     // Initial Application State
     let appState = {
-      defaultFtWage: 2400.00,        // Default full-time monthly wage
-      monthlyFtOverrides: {},        // Map of 'YYYY-MM' -> custom full-time wage (for pay rises or past changes)
-      ptTaxPercent: 20,              // Optional estimated tax/NI % on part-time earnings
+      defaultFtWage: 2400.00,        // Default gross full-time monthly wage
+      monthlyFtOverrides: {},        // Map of 'YYYY-MM' -> custom gross full-time wage (for pay rises)
+      taxSettings: {
+        taxEnabled: true,            // Combined UK PAYE Income Tax calculation
+        niEnabled: true,             // Combined Employee National Insurance (Cat A: 8% / 2%)
+        personalAllowanceMonthly: 1047.50, // £12,570 / 12 (0% tax-free allowance)
+        basicRateLimitMonthly: 4189.17,    // £50,270 / 12 (20% basic rate ceiling)
+        higherRateLimitMonthly: 10428.33,  // £125,140 / 12 (40% higher rate ceiling; 45% above)
+        pensionPercent: 0            // Optional pre-tax pension contribution (%)
+      },
       rates: { ...DEFAULT_RATES_25_26 },
       entries: []                    // Array of shift/standby/callout records
     };
@@ -816,6 +835,7 @@
           appState = {
             ...appState,
             ...parsed,
+            taxSettings: { ...appState.taxSettings, ...(parsed.taxSettings || {}) },
             rates: { ...DEFAULT_RATES_25_26, ...(parsed.rates || {}) },
             monthlyFtOverrides: parsed.monthlyFtOverrides || {},
             entries: Array.isArray(parsed.entries) ? parsed.entries : []
@@ -827,121 +847,86 @@
     }
 
     /**
-     * Gets the effective Full-Time Monthly Wage for a specific 'YYYY-MM' month
+     * Calculates Combined Monthly UK PAYE Income Tax & National Insurance (Single Employer)
+     * Default UK 2026/27 Bands (England/Wales/NI):
+     *  - Personal Allowance: £0 to £1,047.50/mo (£12,570/yr) -> 0%
+     *  - Basic Rate: £1,047.50 to £4,189.17/mo (£12,571 to £50,270/yr) -> 20%
+     *  - Higher Rate: £4,189.17 to £10,428.33/mo (£50,271 to £125,140/yr) -> 40%
+     *  - Additional Rate: Above £10,428.33/mo -> 45%
+     *  - Employee NI (Cat A, combined earnings): 8% (£1,048–£4,189/mo), 2% (>£4,189/mo)
      */
-    function getFtWageForMonth(ym) {
-      if (Object.prototype.hasOwnProperty.call(appState.monthlyFtOverrides, ym)) {
-        return Number(appState.monthlyFtOverrides[ym]) || 0;
-      }
-      return Number(appState.defaultFtWage) || 0;
-    }
+    function calculateCombinedUKPaye(grossMonthly) {
+      const gross = Math.max(0, Number(grossMonthly) || 0);
+      const ts = appState.taxSettings;
 
-    /**
-     * Calculates hours, base pay, Night Duty Allowance (NDA), standby pay, and row total
-     */
-    function calculateEntryPay(entry) {
-      const r = appState.rates;
-      const dayCat = getDayCategory(entry.date);
-      const isBank = Boolean(entry.isBankHoliday);
-      // Default applyNda to true for backwards compatibility with previously saved shifts/call-outs
-      const applyNda = entry.type !== 'standby' && (entry.applyNda !== undefined ? Boolean(entry.applyNda) : true);
+      const pensionPct = Math.min(100, Math.max(0, Number(ts.pensionPercent) || 0));
+      const pensionDeduction = Math.round(gross * (pensionPct / 100) * 100) / 100;
 
-      // Determine applicable hourly rate
-      let hourlyRate = r.hourlyWeekday;
-      let dayLabel = 'Weekday';
-      if (isBank) {
-        hourlyRate = r.hourlySundayBank;
-        dayLabel = 'Bank Holiday';
-      } else if (dayCat === 'sunday') {
-        hourlyRate = r.hourlySundayBank;
-        dayLabel = 'Sunday';
-      } else if (dayCat === 'saturday') {
-        hourlyRate = r.hourlySaturday;
-        dayLabel = 'Saturday';
-      }
-
-      // 1. WORK SHIFT (Hourly + NDA)
-      if (entry.type === 'shift') {
-        const hours = calculateDurationHours(entry.startTime, entry.endTime);
-        const basePay = Math.round(hours * hourlyRate * 100) / 100;
-        const nda = calculateNightDutyAllowance(entry.startTime, entry.endTime, hourlyRate, applyNda);
-        const totalPay = Math.round((basePay + nda.totalNdaPay) * 100) / 100;
+      if (!ts.taxEnabled) {
         return {
-          hours,
-          dayLabel,
-          rateText: `${formatGBP(hourlyRate)}/hr`,
-          basePay,
-          nda,
-          standbyPay: 0,
-          pay: totalPay
+          gross,
+          pensionDeduction,
+          taxablePay: Math.max(0, gross - pensionDeduction),
+          basicTax: 0,
+          higherTax: 0,
+          additionalTax: 0,
+          incomeTax: 0,
+          nationalInsurance: 0,
+          totalDeductions: pensionDeduction,
+          netPay: Math.round((gross - pensionDeduction) * 100) / 100,
+          highestBandLabel: 'Gross Mode (Tax Off)'
         };
       }
 
-      // 2. STANDBY / ON-CALL ALLOWANCE (No NDA on pure availability)
-      if (entry.type === 'standby') {
-        let standbyPay = r.standbyWeekday;
-        if (isBank) {
-          standbyPay = r.standbyBank;
-        } else if (dayCat === 'saturday' || dayCat === 'sunday') {
-          standbyPay = r.standbyWeekend;
-          dayLabel = dayCat === 'saturday' ? 'Saturday (Weekend)' : 'Sunday (Weekend)';
-        }
-        const roundedStandby = Math.round(standbyPay * 100) / 100;
-        return {
-          hours: 0,
-          dayLabel,
-          rateText: `${formatGBP(roundedStandby)} flat`,
-          basePay: 0,
-          nda: calculateNightDutyAllowance('', '', 0, false),
-          standbyPay: roundedStandby,
-          pay: roundedStandby
-        };
+      const taxablePay = Math.max(0, gross - pensionDeduction);
+      const pa = Math.max(0, Number(ts.personalAllowanceMonthly) || 0);
+      const basicLimit = Math.max(pa, Number(ts.basicRateLimitMonthly) || 4189.17);
+      const higherLimit = Math.max(basicLimit, Number(ts.higherRateLimitMonthly) || 10428.33);
+
+      // Income Tax by Marginal Band
+      const basicTaxable = Math.max(0, Math.min(taxablePay, basicLimit) - pa);
+      const higherTaxable = Math.max(0, Math.min(taxablePay, higherLimit) - basicLimit);
+      const additionalTaxable = Math.max(0, taxablePay - higherLimit);
+
+      const basicTax = basicTaxable * 0.20;
+      const higherTax = higherTaxable * 0.40;
+      const additionalTax = additionalTaxable * 0.45;
+      const incomeTax = Math.round((basicTax + higherTax + additionalTax) * 100) / 100;
+
+      // Employee National Insurance (Category A on combined single-employer gross pay)
+      let nationalInsurance = 0;
+      if (ts.niEnabled) {
+        const niPrimaryThreshold = 1048.00; // £12,570 / 12 rounded PAYE threshold
+        const niUpperEarningsLimit = 4189.00; // £50,270 / 12
+        const niMainBand = Math.max(0, Math.min(gross, niUpperEarningsLimit) - niPrimaryThreshold);
+        const niUpperBand = Math.max(0, gross - niUpperEarningsLimit);
+        nationalInsurance = Math.round(((niMainBand * 0.08) + (niUpperBand * 0.02)) * 100) / 100;
       }
 
-      // 3. CALL-OUT (Base Call-Out Pay + NDA on worked hours)
-      if (entry.type === 'callout') {
-        const actualHours = calculateDurationHours(entry.startTime, entry.endTime);
-        const mode = r.calloutMode || 'hourly_plus_fee';
-        let rawBasePay = 0;
-        let rateText = '';
+      const totalDeductions = Math.round((pensionDeduction + incomeTax + nationalInsurance) * 100) / 100;
+      const netPay = Math.round((gross - totalDeductions) * 100) / 100;
 
-        if (mode === 'flat_only') {
-          rawBasePay = Number(r.calloutFee) || 0;
-          rateText = `${formatGBP(rawBasePay)} flat call-out`;
-        } else if (mode === 'hourly_min_hours') {
-          const paidHours = Math.max(actualHours, Number(r.calloutMinHours) || 0);
-          rawBasePay = paidHours * hourlyRate;
-          rateText = `${paidHours.toFixed(2)}h × ${formatGBP(hourlyRate)}`;
-        } else {
-          // hourly_plus_fee
-          const fee = Number(r.calloutFee) || 0;
-          rawBasePay = (actualHours * hourlyRate) + fee;
-          rateText = `${formatGBP(hourlyRate)}/hr + ${formatGBP(fee)}`;
-        }
-
-        const basePay = Math.round(rawBasePay * 100) / 100;
-        const nda = calculateNightDutyAllowance(entry.startTime, entry.endTime, hourlyRate, applyNda);
-        const totalPay = Math.round((basePay + nda.totalNdaPay) * 100) / 100;
-
-        return {
-          hours: actualHours,
-          dayLabel,
-          rateText,
-          basePay,
-          nda,
-          standbyPay: 0,
-          pay: totalPay
-        };
+      let highestBandLabel = '0% Personal Allowance';
+      if (additionalTaxable > 0) {
+        highestBandLabel = '45% Additional Rate';
+      } else if (higherTaxable > 0) {
+        highestBandLabel = '40% Higher Rate';
+      } else if (basicTaxable > 0) {
+        highestBandLabel = '20% Basic Rate';
       }
 
       return {
-        hours: 0,
-        dayLabel,
-        rateText: '—',
-        basePay: 0,
-        nda: calculateNightDutyAllowance('', '', 0, false),
-        standbyPay: 0,
-        pay: 0
+        gross,
+        pensionDeduction,
+        taxablePay,
+        basicTax: Math.round(basicTax * 100) / 100,
+        higherTax: Math.round(higherTax * 100) / 100,
+        additionalTax: Math.round(additionalTax * 100) / 100,
+        incomeTax,
+        nationalInsurance,
+        totalDeductions,
+        netPay,
+        highestBandLabel
       };
     }
 
@@ -955,7 +940,13 @@
     function populateSettingsInputs() {
       document.getElementById('setting-ft-wage').value = getFtWageForMonth(selectedMonth).toFixed(2);
       document.getElementById('quick-ft-wage').value = getFtWageForMonth(selectedMonth).toFixed(2);
-      document.getElementById('setting-pt-tax').value = appState.ptTaxPercent;
+
+      document.getElementById('setting-tax-enabled').checked = Boolean(appState.taxSettings.taxEnabled);
+      document.getElementById('setting-ni-enabled').checked = Boolean(appState.taxSettings.niEnabled);
+      document.getElementById('setting-personal-allowance').value = appState.taxSettings.personalAllowanceMonthly;
+      document.getElementById('setting-basic-limit').value = appState.taxSettings.basicRateLimitMonthly;
+      document.getElementById('setting-higher-limit').value = appState.taxSettings.higherRateLimitMonthly;
+      document.getElementById('setting-pension-pct').value = appState.taxSettings.pensionPercent;
 
       document.getElementById('rate-hourly-weekday').value = appState.rates.hourlyWeekday;
       document.getElementById('rate-hourly-saturday').value = appState.rates.hourlySaturday;
@@ -1084,64 +1075,64 @@
 
       const ptTotal = Math.round((totalBasePay + totalNdaPay + standbyPay) * 100) / 100;
       const combinedGross = Math.round((ftWage + ptTotal) * 100) / 100;
-      const taxRate = (Number(appState.ptTaxPercent) || 0) / 100;
-      const ptAfterTax = ptTotal * (1 - taxRate);
-      const combinedEstimatedNet = Math.round((ftWage + ptAfterTax) * 100) / 100;
+
+      // Calculate Combined UK PAYE Tax & NI (Option 1: Single Employer Combined Payslip)
+      const ftOnlyPaye = calculateCombinedUKPaye(ftWage);
+      const combinedPaye = calculateCombinedUKPaye(combinedGross);
+      const marginalNetPtGain = Math.round((combinedPaye.netPay - ftOnlyPaye.netPay) * 100) / 100;
+      const effectiveDeductionRate = combinedGross > 0
+        ? ((combinedPaye.totalDeductions / combinedGross) * 100).toFixed(1)
+        : '0.0';
 
       // Update Summary Cards
       document.getElementById('summary-ft-wage').textContent = formatGBP(ftWage);
       document.getElementById('summary-shift-hours').textContent = `${totalWorkedHours.toFixed(2)} hrs`;
-      document.getElementById('summary-shift-pay').textContent = formatGBP(totalBasePay);
-      document.getElementById('summary-callout-subtext').textContent = `${calloutCount} ${calloutCount === 1 ? 'call-out' : 'call-outs'} included`;
-
-      document.getElementById('summary-nda-hours').textContent = `${totalNdaHours.toFixed(2)} night hrs`;
-      document.getElementById('summary-nda-pay').textContent = formatGBP(totalNdaPay);
-
-      document.getElementById('summary-standby-count').textContent = `${standbyCount} ${standbyCount === 1 ? 'day' : 'days'}`;
-      document.getElementById('summary-standby-pay').textContent = formatGBP(standbyPay);
-
       document.getElementById('summary-pt-subtotal').textContent = formatGBP(ptTotal);
-      document.getElementById('summary-pt-subtotal-badge').textContent = `PT: ${formatGBP(ptTotal)}`;
-      document.getElementById('summary-grand-total').textContent = formatGBP(combinedGross);
-      document.getElementById('summary-after-tax-note').textContent = taxRate > 0
-        ? `Est. net after ${appState.ptTaxPercent}% PT tax: ${formatGBP(combinedEstimatedNet)}`
-        : 'Showing gross combined pay';
+      document.getElementById('summary-pt-components').textContent =
+        `Base ${formatGBP(totalBasePay)} · NDA ${formatGBP(totalNdaPay)} · Standby ${formatGBP(standbyPay)}`;
 
-      // Render Table Rows (applying optional category filter)
-      const activeFilter = document.getElementById('filter-type').value;
-      const visibleEntries = activeFilter === 'all'
-        ? monthEntries
-        : monthEntries.filter(e => e.type === activeFilter);
+      document.getElementById('summary-combined-gross').textContent = formatGBP(combinedGross);
+      document.getElementById('summary-tax-band-badge').textContent = `Band: ${combinedPaye.highestBandLabel}`;
 
-      const tbody = document.getElementById('entries-table-body');
-      tbody.innerHTML = '';
+      document.getElementById('summary-total-deductions').textContent = `-${formatGBP(combinedPaye.totalDeductions)}`;
+      document.getElementById('summary-effective-rate').textContent = `${effectiveDeductionRate}% total`;
+      document.getElementById('summary-deductions-subtext').textContent = appState.taxSettings.taxEnabled
+        ? `Tax: ${formatGBP(combinedPaye.incomeTax)} · NI: ${formatGBP(combinedPaye.nationalInsurance)}`
+        : 'Tax & NI calculation turned off';
 
-      if (visibleEntries.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="10" class="py-10 px-4 text-center text-slate-400">
-              <p class="text-sm font-medium text-slate-500">No part-time entries logged for ${formatMonthHeading(selectedMonth)}.</p>
-              <p class="text-xs mt-1">Use the form above to add a shift, standby allowance, or call-out.</p>
-            </td>
-          </tr>
-        `;
+      document.getElementById('summary-net-total').textContent = formatGBP(combinedPaye.netPay);
+      document.getElementById('summary-pt-net-boost').textContent = `+${formatGBP(marginalNetPtGain)} net PT`;
+      document.getElementById('summary-after-tax-note').textContent = appState.taxSettings.taxEnabled
+        ? `FT Net ${formatGBP(ftOnlyPaye.netPay)} + PT Net ${formatGBP(marginalNetPtGain)}`
+        : 'Showing combined gross pay';
+
+      // Update Payslip Breakdown Strip
+      const modePill = document.getElementById('payslip-mode-pill');
+      if (appState.taxSettings.taxEnabled) {
+        modePill.textContent = appState.taxSettings.niEnabled ? 'UK PAYE (20%/40%) + NI (8%)' : 'UK PAYE Income Tax Only';
+        modePill.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/70';
       } else {
-        visibleEntries.forEach(entry => {
-          const res = calculateEntryPay(entry);
+        modePill.textContent = 'Gross Only (Tax Off)';
+        modePill.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200';
+      }
 
-          // Category Badge Styling
-          let badgeHtml = '';
-          if (entry.type === 'shift') {
-            badgeHtml = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/70">Work Shift</span>`;
-          } else if (entry.type === 'standby') {
-            badgeHtml = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/70">Standby Only</span>`;
-          } else {
-            badgeHtml = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200/70">Call-Out</span>`;
-          }
+      document.getElementById('strip-base-pay').textContent = formatGBP(totalBasePay);
+      document.getElementById('strip-nda-pay').textContent = formatGBP(totalNdaPay);
+      document.getElementById('strip-nda-hours').textContent = `(${totalNdaHours.toFixed(2)}h)`;
+      document.getElementById('strip-standby-pay').textContent = formatGBP(standbyPay);
+      document.getElementById('strip-standby-days').textContent = `(${standbyCount}d)`;
 
-          const bankTag = entry.isBankHoliday
-            ? `<span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold bg-rose-100 text-rose-700 rounded">Bank Hol</span>`
-            : '';
+      const pensionWrap = document.getElementById('strip-pension-wrap');
+      if (combinedPaye.pensionDeduction > 0) {
+        pensionWrap.classList.remove('hidden');
+        document.getElementById('strip-pension-ded').textContent = `-${formatGBP(combinedPaye.pensionDeduction)}`;
+      } else {
+        pensionWrap.classList.add('hidden');
+      }
+
+      document.getElementById('strip-income-tax').textContent = `-${formatGBP(combinedPaye.incomeTax)}`;
+      document.getElementById('strip-ni-tax').textContent = `-${formatGBP(combinedPaye.nationalInsurance)}`;
+      document.getElementById('strip-net-pay').textContent = formatGBP(combinedPaye.netPay);
 
           const timeRange = entry.type === 'standby' && !entry.startTime
             ? '—'
@@ -1221,10 +1212,14 @@
       document.getElementById('table-standby-total').textContent = formatGBP(standbyPay);
       document.getElementById('table-pt-total').textContent = formatGBP(ptTotal);
       document.getElementById('table-ft-total').textContent = formatGBP(ftWage);
-      document.getElementById('table-grand-total').textContent = formatGBP(combinedGross);
-      document.getElementById('table-tax-summary').textContent = taxRate > 0
-        ? `Est. Take-Home (${appState.ptTaxPercent}% PT tax): ${formatGBP(combinedEstimatedNet)}`
-        : '';
+      document.getElementById('table-combined-gross').textContent = formatGBP(combinedGross);
+      document.getElementById('table-deductions-summary').textContent = appState.taxSettings.taxEnabled
+        ? `Deductions: Income Tax -${formatGBP(combinedPaye.incomeTax)} | National Insurance -${formatGBP(combinedPaye.nationalInsurance)}${combinedPaye.pensionDeduction > 0 ? ` | Pension -${formatGBP(combinedPaye.pensionDeduction)}` : ''}`
+        : 'Tax & NI Deductions Disabled';
+      document.getElementById('table-grand-total').textContent = formatGBP(combinedPaye.netPay);
+      document.getElementById('table-tax-summary').textContent = appState.taxSettings.taxEnabled
+        ? `Includes +${formatGBP(marginalNetPtGain)} net take-home from part-time work (${combinedPaye.highestBandLabel})`
+        : 'Showing gross combined total';
 
       updateFormLivePreview();
     }
@@ -1327,31 +1322,32 @@
         applyFullTimeWageUpdate(e.target.value, scope);
       });
 
-      // Part-Time Tax % Setting
-      document.getElementById('setting-pt-tax').addEventListener('change', (e) => {
-        appState.ptTaxPercent = Math.min(100, Math.max(0, Number(e.target.value) || 0));
+      // UK PAYE Tax & NI Settings Listeners
+      document.getElementById('setting-tax-enabled').addEventListener('change', (e) => {
+        appState.taxSettings.taxEnabled = e.target.checked;
         saveState();
         renderDashboard();
       });
 
-      // Rate Inputs Auto-Save
-      const rateBindings = [
-        ['rate-hourly-weekday', 'hourlyWeekday'],
-        ['rate-hourly-saturday', 'hourlySaturday'],
-        ['rate-hourly-sunday', 'hourlySundayBank'],
-        ['rate-standby-weekday', 'standbyWeekday'],
-        ['rate-standby-weekend', 'standbyWeekend'],
-        ['rate-standby-bank', 'standbyBank'],
-        ['rate-callout-fee', 'calloutFee'],
-        ['rate-callout-min-hours', 'calloutMinHours']
+      document.getElementById('setting-ni-enabled').addEventListener('change', (e) => {
+        appState.taxSettings.niEnabled = e.target.checked;
+        saveState();
+        renderDashboard();
+      });
+
+      const taxNumberBindings = [
+        ['setting-personal-allowance', 'personalAllowanceMonthly'],
+        ['setting-basic-limit', 'basicRateLimitMonthly'],
+        ['setting-higher-limit', 'higherRateLimitMonthly'],
+        ['setting-pension-pct', 'pensionPercent']
       ];
 
-      rateBindings.forEach(([elementId, rateKey]) => {
+      taxNumberBindings.forEach(([elementId, key]) => {
         document.getElementById(elementId).addEventListener('change', (e) => {
-          appState.rates[rateKey] = Math.max(0, Number(e.target.value) || 0);
+          appState.taxSettings[key] = Math.max(0, Number(e.target.value) || 0);
           saveState();
           renderDashboard();
-          showToast('Rate updated');
+          showToast('Tax threshold updated');
         });
       });
 
@@ -1562,10 +1558,19 @@
         });
 
         const ftWage = getFtWageForMonth(selectedMonth);
+        const combinedGross = ftWage + ptTotal;
+        const paye = calculateCombinedUKPaye(combinedGross);
+
         rows.push([]);
-        rows.push(['Part-Time Subtotal', '', '', '', '', '', '', '', '', '', '', '', '', '', ptTotal.toFixed(2)]);
-        rows.push(['Full-Time Base Wage', '', '', '', '', '', '', '', '', '', '', '', '', '', ftWage.toFixed(2)]);
-        rows.push(['Combined Monthly Total', '', '', '', '', '', '', '', '', '', '', '', '', '', (ftWage + ptTotal).toFixed(2)]);
+        rows.push(['Part-Time Gross Subtotal', '', '', '', '', '', '', '', '', '', '', '', '', '', ptTotal.toFixed(2)]);
+        rows.push(['Full-Time Gross Monthly Wage', '', '', '', '', '', '', '', '', '', '', '', '', '', ftWage.toFixed(2)]);
+        rows.push(['Combined Gross Pay', '', '', '', '', '', '', '', '', '', '', '', '', '', combinedGross.toFixed(2)]);
+        if (paye.pensionDeduction > 0) {
+          rows.push(['Pension Deduction', '', '', '', '', '', '', '', '', '', '', '', '', '', (-paye.pensionDeduction).toFixed(2)]);
+        }
+        rows.push(['UK Income Tax (PAYE)', '', '', '', '', '', '', '', '', '', '', '', '', '', (-paye.incomeTax).toFixed(2)]);
+        rows.push(['National Insurance (Cat A)', '', '', '', '', '', '', '', '', '', '', '', '', '', (-paye.nationalInsurance).toFixed(2)]);
+        rows.push(['Estimated Net Take-Home Pay', '', '', '', '', '', '', '', '', '', '', '', '', '', paye.netPay.toFixed(2)]);
 
         const csvContent = rows.map(r => r.join(',')).join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1605,6 +1610,7 @@
             appState = {
               ...appState,
               ...imported,
+              taxSettings: { ...appState.taxSettings, ...(imported.taxSettings || {}) },
               rates: { ...DEFAULT_RATES_25_26, ...(imported.rates || {}) },
               monthlyFtOverrides: imported.monthlyFtOverrides || {}
             };
