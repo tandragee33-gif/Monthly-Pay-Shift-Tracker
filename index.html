@@ -223,6 +223,58 @@
         </div>
 
         <!-- Column 4: Call-Out Configuration -->
+        <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-purple-700">4. Call-Out Calculation</h3>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">Rule</span>
+          </div>
+
+          <div>
+            <label for="rate-callout-mode" class="block text-xs font-medium text-slate-700 mb-1">Call-Out Pay Method</label>
+            <select id="rate-callout-mode" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none">
+              <option value="hourly_plus_fee">Worked Hours × Rate + Call-Out Fee</option>
+              <option value="hourly_min_hours">Minimum Guaranteed Hours × Rate</option>
+              <option value="flat_only">Flat Call-Out Fee Only</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label for="rate-callout-fee" class="block text-xs font-medium text-slate-700 mb-1">Call-Out Fee (£)</label>
+              <input type="number" step="0.01" min="0" id="rate-callout-fee"
+                class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" />
+            </div>
+            <div>
+              <label for="rate-callout-min-hours" class="block text-xs font-medium text-slate-700 mb-1">Min Hours</label>
+              <input type="number" step="0.5" min="0" id="rate-callout-min-hours"
+                class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 outline-none" />
+            </div>
+          </div>
+
+          <p class="text-[11px] text-slate-500 leading-relaxed">
+            NDA (+25% / +33⅓%) also applies automatically to call-out hours worked between 20:00 and 06:00.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Monthly Summary Dashboard Cards -->
+    <section aria-label="Monthly Pay Summary">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+        <h2 class="text-sm font-semibold text-slate-600 uppercase tracking-wider">
+          Pay Summary for <span id="display-month-label" class="text-indigo-600 font-bold">November 2026</span>
+        </h2>
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+          <span>Quick Full-Time Wage:</span>
+          <div class="relative inline-flex items-center">
+            <span class="absolute left-2.5 text-slate-400 font-medium">£</span>
+            <input type="number" step="0.01" min="0" id="quick-ft-wage"
+              class="w-32 pl-6 pr-2 py-1 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <button type="button" id="open-wage-rise-btn" class="text-indigo-600 hover:underline font-medium">Edit / Pay Rise</button>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         <!-- Card 1: Full-Time Base Wage -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
@@ -315,155 +367,54 @@
           <span id="preview-pay" class="font-bold text-emerald-700">Total: £0.00</span>
         </div>
       </div>
-    </section>
 
-    <!-- Monthly Summary Dashboard Cards -->
-    <section aria-label="Monthly Pay Summary">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-        <h2 class="text-sm font-semibold text-slate-600 uppercase tracking-wider">
-          Pay Summary for <span id="display-month-label" class="text-indigo-600 font-bold">November 2026</span>
-        </h2>
-        <div class="flex items-center gap-2 text-xs text-slate-500">
-          <span>Quick Full-Time Wage:</span>
-          <div class="relative inline-flex items-center">
-            <span class="absolute left-2.5 text-slate-400 font-medium">£</span>
-            <input type="number" step="0.01" min="0" id="quick-ft-wage"
-              class="w-32 pl-6 pr-2 py-1 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
-          </div>
-          <button id="open-wage-rise-btn" class="text-indigo-600 hover:underline font-medium">Edit / Pay Rise</button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <!-- Card 1: Full-Time Base Wage -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Full-Time Base Wage</span>
-            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-          </div>
-          <div class="mt-2">
-            <div id="summary-ft-wage" class="text-2xl font-bold text-slate-900">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">Fixed monthly salary</p>
-          </div>
-        </div>
-
-        <!-- Card 2: Part-Time Shift Hours Pay -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Part-Time Shifts</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-50 text-emerald-700" id="summary-shift-hours">0.00 hrs</span>
-          </div>
-          <div class="mt-2">
-            <div id="summary-shift-pay" class="text-2xl font-bold text-emerald-700">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">Weekday / Sat / Sun rates</p>
-          </div>
-        </div>
-
-        <!-- Card 3: Standby / On-Call Allowance -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Standby / On-Call</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-50 text-amber-700" id="summary-standby-count">0 days</span>
-          </div>
-          <div class="mt-2">
-            <div id="summary-standby-pay" class="text-2xl font-bold text-amber-700">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5">Availability allowances</p>
-          </div>
-        </div>
-
-        <!-- Card 4: Call-Out Pay -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-500">Call-Outs</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-purple-50 text-purple-700" id="summary-callout-count">0 calls</span>
-          </div>
-          <div class="mt-2">
-            <div id="summary-callout-pay" class="text-2xl font-bold text-purple-700">£0.00</div>
-            <p class="text-[11px] text-slate-400 mt-0.5" id="summary-callout-hours">0.00 hrs logged</p>
-          </div>
-        </div>
-
-        <!-- Card 5: Combined Monthly Total -->
-        <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-sm flex flex-col justify-between">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-indigo-100">Combined Total</span>
-            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-indigo-500 text-white" id="summary-pt-subtotal-badge">PT: £0.00</span>
-          </div>
-          <div class="mt-2">
-            <div id="summary-grand-total" class="text-2xl font-bold tracking-tight">£0.00</div>
-            <p id="summary-after-tax-note" class="text-[11px] text-indigo-200 mt-0.5">Est. after PT tax: £0.00</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Add / Edit Entry Form Card -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-2xs p-5">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-        <div>
-          <h3 id="form-heading" class="text-base font-semibold text-slate-900">Log Part-Time Shift, Standby or Call-Out</h3>
-          <p class="text-xs text-slate-500">Automatically detects Weekday, Saturday, or Sunday rates and handles overnight shifts past midnight.</p>
-        </div>
-        <div id="live-preview-pill" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">
-          <span>Preview:</span>
-          <span id="preview-day-badge" class="font-semibold text-indigo-600">Weekday</span>
-          <span>•</span>
-          <span id="preview-hours">0.00 hrs</span>
-          <span>•</span>
-          <span id="preview-pay" class="font-bold text-emerald-700">£0.00</span>
-        </div>
-      </div>
-
-      <form id="entry-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
+      <form id="entry-form" class="space-y-4">
         <input type="hidden" id="editing-entry-id" value="" />
 
-        <!-- Date -->
-        <div class="lg:col-span-2">
-          <label for="entry-date" class="block text-xs font-medium text-slate-700 mb-1">Date</label>
-          <input type="date" id="entry-date" required
-            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+        <!-- Row 1: Date, Shift Type, Start Time, End Time, Notes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
+          <!-- Date -->
+          <div class="lg:col-span-2">
+            <label for="entry-date" class="block text-xs font-medium text-slate-700 mb-1">Date</label>
+            <input type="date" id="entry-date" required
+              class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+
+          <!-- Entry Type -->
+          <div class="lg:col-span-3">
+            <label for="entry-type" class="block text-xs font-medium text-slate-700 mb-1">Type</label>
+            <select id="entry-type"
+              class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none font-medium">
+              <option value="shift">Work Shift (Hourly)</option>
+              <option value="standby">Standby / On-Call</option>
+              <option value="callout">Call-Out</option>
+            </select>
+          </div>
+
+          <!-- Start Time -->
+          <div class="lg:col-span-2" id="start-time-wrapper">
+            <label for="entry-start" class="block text-xs font-medium text-slate-700 mb-1">Start Time</label>
+            <input type="time" id="entry-start" value="18:00"
+              class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+
+          <!-- End Time -->
+          <div class="lg:col-span-2" id="end-time-wrapper">
+            <label for="entry-end" class="block text-xs font-medium text-slate-700 mb-1">End Time</label>
+            <input type="time" id="entry-end" value="22:00"
+              class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+
+          <!-- Notes -->
+          <div class="sm:col-span-2 lg:col-span-3">
+            <label for="entry-notes" class="block text-xs font-medium text-slate-700 mb-1">Notes (Optional)</label>
+            <input type="text" id="entry-notes" placeholder="e.g. Gritting route 4"
+              class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
         </div>
 
-        <!-- Entry Type -->
-        <div class="lg:col-span-2">
-          <label for="entry-type" class="block text-xs font-medium text-slate-700 mb-1">Type</label>
-          <select id="entry-type"
-            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none font-medium">
-            <option value="shift">Work Shift (Hourly)</option>
-            <option value="standby">Standby / On-Call</option>
-            <option value="callout">Call-Out</option>
-          </select>
-        </div>
-
-        <!-- Start Time -->
-        <div class="lg:col-span-2" id="start-time-wrapper">
-          <label for="entry-start" class="block text-xs font-medium text-slate-700 mb-1">Start Time</label>
-          <input type="time" id="entry-start" value="18:00"
-            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
-        </div>
-
-        <!-- End Time -->
-        <div class="lg:col-span-2" id="end-time-wrapper">
-          <label for="entry-end" class="block text-xs font-medium text-slate-700 mb-1">End Time</label>
-          <input type="time" id="entry-end" value="22:00"
-            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
-        </div>
-
-        <!-- Bank / Public Holiday Override & Notes -->
-        <div class="lg:col-span-2">
-          <label for="entry-notes" class="block text-xs font-medium text-slate-700 mb-1">Notes (Optional)</label>
-          <input type="text" id="entry-notes" placeholder="e.g. Gritting route 4"
-            class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none" />
-        </div>
-
-        <!-- Submit / Cancel Buttons -->
-        <div class="lg:col-span-2 flex items-center gap-2">
-          <button type="submit" id="submit-entry-btn"
-            class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        <!-- Row 2 inside form: Bank Holiday Toggle, NDA Toggle & Quick Presets -->
-        <div class="sm:col-span-2 lg:col-span-12 pt-2.5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100">
+        <!-- Row 2: Bank Holiday Toggle, NDA Toggle & Quick Time Presets -->
+        <div class="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100">
           <div class="flex flex-wrap items-center gap-4">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="entry-bank-holiday" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
@@ -481,10 +432,25 @@
           <!-- Quick Shift Time Presets -->
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-[11px] text-slate-400">Quick Times:</span>
-            <button type="button" data-start="18:00" data-end="22:00" class="preset-time-btn px-2 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">18:00–22:00</button>
-            <button type="button" data-start="21:00" data-end="04:00" class="preset-time-btn px-2 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">21:00–04:00 (Night)</button>
-            <button type="button" data-start="03:00" data-end="07:00" class="preset-time-btn px-2 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">03:00–07:00</button>
+            <button type="button" data-start="18:00" data-end="22:00" class="preset-time-btn px-2.5 py-1 text-[11px] font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">18:00–22:00</button>
+            <button type="button" data-start="21:00" data-end="04:00" class="preset-time-btn px-2.5 py-1 text-[11px] font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">21:00–04:00 (Night)</button>
+            <button type="button" data-start="03:00" data-end="07:00" class="preset-time-btn px-2.5 py-1 text-[11px] font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">03:00–07:00</button>
           </div>
+        </div>
+
+        <!-- Row 3: Prominent Primary Submit & Cancel Edit Action Bar -->
+        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-end gap-2.5">
+          <button type="button" id="cancel-edit-btn"
+            class="hidden w-full sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition cursor-pointer">
+            Cancel Edit
+          </button>
+          <button type="submit" id="submit-entry-btn"
+            class="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-semibold rounded-xl shadow-sm transition flex items-center justify-center gap-2 cursor-pointer shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span id="submit-btn-text">Add Shift / Entry</span>
+          </button>
         </div>
       </form>
     </section>
